@@ -1,7 +1,21 @@
 import React from 'react';
-import { TrendingUp, Heart } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ onNavigate }) {
+  const handleLinkClick = (e, targetId) => {
+    e.preventDefault();
+    if (onNavigate) {
+      onNavigate(`/${targetId}`);
+    } else {
+      const element = document.querySelector(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.location.href = `/${targetId}`;
+      }
+    }
+  };
+
   return (
     <footer style={{
       background: '#060911',
@@ -10,14 +24,14 @@ export default function Footer() {
       color: '#94a3b8'
     }}>
       <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '40px', marginBottom: '40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '40px', marginBottom: '40px' }}>
           
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', cursor: 'pointer' }} onClick={() => onNavigate ? onNavigate('/') : window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <div style={{ background: '#10b981', padding: '8px', borderRadius: '8px', display: 'flex' }}>
                 <TrendingUp size={20} color="#ffffff" />
               </div>
-              <span className="font-display" style={{ fontSize: '1.2rem', color: '#ffffff', fontWeight: 800 }}>
+              <span className="font-display" style={{ fontSize: '1.15rem', color: '#ffffff', fontWeight: 800 }}>
                 A MÁQUINA DE LUCRO DA SUA LOJA
               </span>
             </div>
@@ -29,10 +43,10 @@ export default function Footer() {
           <div>
             <h4 className="font-display" style={{ color: '#ffffff', fontSize: '1rem', marginBottom: '16px' }}>Links Rápidos</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
-              <a href="#calculadora" style={{ color: '#94a3b8', textDecoration: 'none' }}>Calculadora de Lucro</a>
-              <a href="#livro" style={{ color: '#94a3b8', textDecoration: 'none' }}>Os 4 Pilares do Livro</a>
-              <a href="#comprar" style={{ color: '#94a3b8', textDecoration: 'none' }}>Onde Comprar (Amazon/Kindle)</a>
-              <a href="#artigos" style={{ color: '#94a3b8', textDecoration: 'none' }}>Artigos & Estratégias</a>
+              <a href="/#calculadora" onClick={(e) => handleLinkClick(e, '#calculadora')} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }}>Calculadora de Lucro</a>
+              <a href="/#livro" onClick={(e) => handleLinkClick(e, '#livro')} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }}>Os 4 Pilares do Livro</a>
+              <a href="/#comprar" onClick={(e) => handleLinkClick(e, '#comprar')} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }}>Onde Comprar (Amazon/Kindle)</a>
+              <a href="/#artigos" onClick={(e) => handleLinkClick(e, '#artigos')} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }}>Artigos & Estratégias</a>
             </div>
           </div>
 

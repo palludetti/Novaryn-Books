@@ -1,15 +1,30 @@
 import React, { useState } from 'react';
 import { TrendingUp, Lock, Gift, Menu, X } from 'lucide-react';
 
-export default function Header({ onOpenLeadModal, onOpenAdminModal }) {
+export default function Header({ onOpenLeadModal, onOpenAdminModal, onNavigate }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNavClick = (e, targetId) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
-    const element = document.querySelector(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (onNavigate) {
+      onNavigate(`/${targetId}`);
+    } else {
+      const element = document.querySelector(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.location.href = `/${targetId}`;
+      }
+    }
+  };
+
+  const handleLogoClick = () => {
+    setIsMobileMenuOpen(false);
+    if (onNavigate) {
+      onNavigate('/');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -29,7 +44,7 @@ export default function Header({ onOpenLeadModal, onOpenAdminModal }) {
         {/* Logo */}
         <div 
           style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} 
-          onClick={() => { setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          onClick={handleLogoClick}
         >
           <div style={{
             background: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
@@ -54,16 +69,16 @@ export default function Header({ onOpenLeadModal, onOpenAdminModal }) {
 
         {/* Desktop Navigation */}
         <nav className="header-desktop-nav">
-          <a href="#calculadora" onClick={(e) => handleNavClick(e, '#calculadora')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
+          <a href="/#calculadora" onClick={(e) => handleNavClick(e, '#calculadora')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
             Calculadora de Lucro
           </a>
-          <a href="#livro" onClick={(e) => handleNavClick(e, '#livro')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
+          <a href="/#livro" onClick={(e) => handleNavClick(e, '#livro')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
             Sobre o Livro & Autor
           </a>
-          <a href="#comprar" onClick={(e) => handleNavClick(e, '#comprar')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
+          <a href="/#comprar" onClick={(e) => handleNavClick(e, '#comprar')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
             Onde Comprar
           </a>
-          <a href="#artigos" onClick={(e) => handleNavClick(e, '#artigos')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
+          <a href="/#artigos" onClick={(e) => handleNavClick(e, '#artigos')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
             Artigos SEO
           </a>
         </nav>
@@ -108,16 +123,16 @@ export default function Header({ onOpenLeadModal, onOpenAdminModal }) {
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
         <div className="header-mobile-drawer">
-          <a href="#calculadora" onClick={(e) => handleNavClick(e, '#calculadora')} className="header-mobile-link">
+          <a href="/#calculadora" onClick={(e) => handleNavClick(e, '#calculadora')} className="header-mobile-link">
             Calculadora de Lucro
           </a>
-          <a href="#livro" onClick={(e) => handleNavClick(e, '#livro')} className="header-mobile-link">
+          <a href="/#livro" onClick={(e) => handleNavClick(e, '#livro')} className="header-mobile-link">
             Sobre o Livro & Autor
           </a>
-          <a href="#comprar" onClick={(e) => handleNavClick(e, '#comprar')} className="header-mobile-link">
+          <a href="/#comprar" onClick={(e) => handleNavClick(e, '#comprar')} className="header-mobile-link">
             Onde Comprar
           </a>
-          <a href="#artigos" onClick={(e) => handleNavClick(e, '#artigos')} className="header-mobile-link">
+          <a href="/#artigos" onClick={(e) => handleNavClick(e, '#artigos')} className="header-mobile-link">
             Artigos SEO
           </a>
           
