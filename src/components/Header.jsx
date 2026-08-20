@@ -79,7 +79,7 @@ export default function Header({ onOpenLeadModal, onOpenAdminModal, onNavigate }
             Onde Comprar
           </a>
           <a href="/#artigos" onClick={(e) => handleNavClick(e, '#artigos')} style={{ color: '#cbd5e1', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem', transition: 'color 0.2s' }}>
-            Artigos SEO
+            Artigos & Estratégias
           </a>
         </nav>
 
@@ -133,7 +133,7 @@ export default function Header({ onOpenLeadModal, onOpenAdminModal, onNavigate }
             Onde Comprar
           </a>
           <a href="/#artigos" onClick={(e) => handleNavClick(e, '#artigos')} className="header-mobile-link">
-            Artigos SEO
+            Artigos & Estratégias
           </a>
           
           <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>

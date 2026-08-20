@@ -60,7 +60,7 @@ export default function ArticlePage({ article, onNavigate, onOpenLeadModal, onOp
           </div>
 
           {/* Article Card Wrapper */}
-          <article className="glass-card" style={{ padding: '48px 40px' }}>
+          <article className="glass-card article-card-wrapper">
             
             {/* Meta Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
@@ -73,7 +73,7 @@ export default function ArticlePage({ article, onNavigate, onOpenLeadModal, onOp
             </div>
 
             {/* Title */}
-            <h1 className="font-display" style={{ fontSize: '2.4rem', color: '#ffffff', lineHeight: 1.3, marginBottom: '24px' }}>
+            <h1 className="font-display article-page-title" style={{ color: '#ffffff', marginBottom: '24px' }}>
               {article.title}
             </h1>
 

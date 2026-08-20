@@ -20,7 +20,7 @@ export default function BlogSection({ onNavigate }) {
           <span className="badge badge-emerald" style={{ marginBottom: '16px' }}>
             <BookOpen size={14} /> Trechos & Estratégias do Livro
           </span>
-          <h2 className="font-display" style={{ fontSize: '2.6rem', color: '#ffffff', marginBottom: '16px' }}>
+          <h2 className="font-display blog-section-title" style={{ color: '#ffffff', marginBottom: '16px' }}>
             Conhecimento Prático por Henrique Voss
           </h2>
           <p style={{ fontSize: '1.1rem', color: '#94a3b8' }}>
