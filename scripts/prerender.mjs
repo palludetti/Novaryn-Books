@@ -44,8 +44,20 @@ for (const article of articles) {
     '<meta name="twitter:image" content="https://maquina-de-lucro-theta.vercel.app/og/og-home.png">'
   ].join('\n    ');
 
-  // Replace default title and inject SEO tags
-  let html = template.replace(/<title>.*?<\/title>/i, '');
+  // Strip from the home template all tags that will be replaced by article-specific ones
+  let html = template;
+  // Remove <title>
+  html = html.replace(/<title>.*?<\/title>/is, '');
+  // Remove meta description (home version)
+  html = html.replace(/[ \t]*<meta name="description"[^>]*\/>\n?/gi, '');
+  // Remove canonical (home version)
+  html = html.replace(/[ \t]*<link rel="canonical"[^>]*\/>\n?/gi, '');
+  // Remove all og: meta tags (type, title, description, url, site_name, image, image:width, image:height, image:type)
+  html = html.replace(/[ \t]*<meta property="og:[^"]*"[^>]*\/>\n?/gi, '');
+  // Remove all twitter: meta tags (card, title, description, image)
+  html = html.replace(/[ \t]*<meta name="twitter:[^"]*"[^>]*\/>\n?/gi, '');
+
+  // Inject article-specific SEO tags before </head>
   html = html.replace('</head>', '    ' + seoTags + '\n  </head>');
 
   // Pre-rendered Crawlable Content inside Root for 100% Raw HTML Indexability
