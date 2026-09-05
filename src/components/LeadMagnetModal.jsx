@@ -84,7 +84,7 @@ export default function LeadMagnetModal({ isOpen, onClose, initialData }) {
 
             {/* Bundle Benefits Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '28px' }}>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(10, 185, 129, 0.3)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+              <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                 <BarChart3 size={24} color="#10b981" style={{ margin: '0 auto 8px' }} />
                 <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.85rem' }}>1. Calculadora de Lucro</div>
                 <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: '4px' }}>Diagnóstico personalizado</div>
