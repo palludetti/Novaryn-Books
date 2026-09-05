@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { X, CheckCircle, BookOpen, Download, Mail, User, Phone, Sparkles, ChevronRight, ShoppingCart, CheckSquare, FileText, BarChart3 } from 'lucide-react';
 
+// Endpoint do Formspree do Caio — cada envio do formulário chega por e-mail.
+const LEAD_WEBHOOK_URL = 'https://formspree.io/f/mjyvolrl';
+
 export default function LeadMagnetModal({ isOpen, onClose, initialData }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -14,8 +17,6 @@ export default function LeadMagnetModal({ isOpen, onClose, initialData }) {
     e.preventDefault();
     if (!email || !name) return;
 
-    // Save lead to LocalStorage
-    const existingLeads = JSON.parse(localStorage.getItem('maquina_lucro_leads') || '[]');
     const newLead = {
       id: Date.now(),
       name,
@@ -25,7 +26,23 @@ export default function LeadMagnetModal({ isOpen, onClose, initialData }) {
       calculatorData: initialData || null
     };
 
+    // Save lead to LocalStorage (mantido como cópia local/backup instantâneo)
+    const existingLeads = JSON.parse(localStorage.getItem('maquina_lucro_leads') || '[]');
     localStorage.setItem('maquina_lucro_leads', JSON.stringify([newLead, ...existingLeads]));
+
+    // Envia o lead para o Caio de verdade (e-mail/planilha), fora do navegador do visitante.
+    // Sem isso, o lead ficava só salvo no computador de quem preencheu o formulário.
+    if (LEAD_WEBHOOK_URL && LEAD_WEBHOOK_URL !== 'COLOQUE_AQUI_SEU_ENDPOINT') {
+      fetch(LEAD_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newLead)
+      }).catch(() => {
+        // Falha de rede não deve travar a experiência do visitante;
+        // o lead continua garantido no localStorage como fallback.
+      });
+    }
+
     setSubmitted(true);
   };
 
@@ -67,7 +84,7 @@ export default function LeadMagnetModal({ isOpen, onClose, initialData }) {
 
             {/* Bundle Benefits Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '28px' }}>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+              <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(10, 185, 129, 0.3)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                 <BarChart3 size={24} color="#10b981" style={{ margin: '0 auto 8px' }} />
                 <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.85rem' }}>1. Calculadora de Lucro</div>
                 <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: '4px' }}>Diagnóstico personalizado</div>
