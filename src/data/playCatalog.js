@@ -44,6 +44,9 @@ export const playCatalog = {
       editions: {
         en: {
           asin: 'B0HJ3T79QC',
+          ebookUS: 'https://www.amazon.com/dp/B0HJ3T79QC',
+          ebookBR: 'https://www.amazon.com.br/dp/B0HJ3T79QC',
+          paperbackUS: 'https://www.amazon.com/dp/B0HJ4P3TD3',
           amazonUS: 'https://www.amazon.com/dp/B0HJ3T79QC',
           amazonBR: 'https://www.amazon.com.br/dp/B0HJ3T79QC',
           priceBR: null,
@@ -51,6 +54,9 @@ export const playCatalog = {
         },
         pt: {
           asin: 'B0HJ3T79QC',
+          ebookUS: 'https://www.amazon.com/dp/B0HJ3T79QC',
+          ebookBR: 'https://www.amazon.com.br/dp/B0HJ3T79QC',
+          paperbackUS: 'https://www.amazon.com/dp/B0HJ4P3TD3',
           amazonUS: 'https://www.amazon.com/dp/B0HJ3T79QC',
           amazonBR: 'https://www.amazon.com.br/dp/B0HJ3T79QC',
           priceBR: null,
