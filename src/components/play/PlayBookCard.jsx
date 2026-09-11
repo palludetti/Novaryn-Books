@@ -287,7 +287,7 @@ export default function PlayBookCard({ book, language = 'en' }) {
                     e.currentTarget.style.transform = 'scale(1)';
                   }}
                 >
-                  {edition.amazonBRDisplay || 'Amazon Brasil'}
+                  {typeof edition.amazonBRDisplay === 'object' ? edition.amazonBRDisplay[language] : edition.amazonBRDisplay || 'Amazon Brasil'}
                   <ExternalLink size={14} />
                 </a>
               )}
@@ -306,7 +306,7 @@ export default function PlayBookCard({ book, language = 'en' }) {
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em'
                 }}>
-                  {edition.amazonBRLabel}
+                  {typeof edition.amazonBRLabel === 'object' ? edition.amazonBRLabel[language] : edition.amazonBRLabel}
                 </div>
               )}
 

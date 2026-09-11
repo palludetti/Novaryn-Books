@@ -16,7 +16,10 @@ export const playCatalog = {
           asin: 'B0HHGCFNF9',
           amazonUS: 'https://www.amazon.com/dp/B0HHGCFNF9',
           amazonBR: null,
-          amazonBRLabel: 'Amazon Brasil — Em breve',
+          amazonBRLabel: {
+            en: 'Amazon Brazil — Coming soon',
+            pt: 'Amazon Brasil — Em breve'
+          },
           priceBR: 'R$ 24,90',
           hasKU: true
         },
@@ -24,7 +27,10 @@ export const playCatalog = {
           asin: 'B0HHG8KK6P',
           amazonUS: null,
           amazonBR: null, // Not yet available
-          amazonBRLabel: 'Amazon Brasil — Em breve', // Coming soon text
+          amazonBRLabel: {
+            en: 'Amazon Brazil — Coming soon',
+            pt: 'Amazon Brasil — Em breve'
+          },
           priceBR: null,
           hasKU: false,
           comingSoon: true,
@@ -50,7 +56,10 @@ export const playCatalog = {
           paperbackUS: 'https://www.amazon.com/dp/B0HJ4P3TD3',
           amazonUS: 'https://www.amazon.com/dp/B0HJ3T79QC',
           amazonBR: 'https://www.amazon.com.br/dp/B0HJ3T79QC',
-          amazonBRDisplay: 'Amazon Brasil — English Edition',
+          amazonBRDisplay: {
+            en: 'Amazon Brazil — English Edition',
+            pt: 'Amazon Brasil — Edição em inglês'
+          },
           priceBR: null,
           hasKU: false
         },
@@ -61,6 +70,10 @@ export const playCatalog = {
           paperbackUS: 'https://www.amazon.com/dp/B0HJ4P3TD3',
           amazonUS: 'https://www.amazon.com/dp/B0HJ3T79QC',
           amazonBR: 'https://www.amazon.com.br/dp/B0HJ3T79QC',
+          amazonBRDisplay: {
+            en: 'Amazon Brazil — English Edition',
+            pt: 'Amazon Brasil — Edição em inglês'
+          },
           priceBR: null,
           hasKU: false,
           isEnglishEdition: true // Mark as English edition for PT language
