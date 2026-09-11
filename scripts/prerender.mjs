@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { articles } from '../src/data/articles.js';
+import { playCatalog } from '../src/data/playCatalog.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +16,7 @@ if (!fs.existsSync(templatePath)) {
 
 const template = fs.readFileSync(templatePath, 'utf8');
 
-console.log("Generating static pre-rendered HTML for " + articles.length + " articles...");
+console.log("Generating static pre-rendered HTML for " + articles.length + " articles and /play...");
 
 for (const article of articles) {
   const articleDir = path.join(distDir, 'artigos', article.slug);
@@ -74,4 +75,48 @@ for (const article of articles) {
   console.log('Generated ' + outFile);
 }
 
-console.log("All static article pages successfully generated!");
+// Generate /play pre-rendered page
+const playDir = path.join(distDir, 'play');
+fs.mkdirSync(playDir, { recursive: true });
+
+const playCanonicalUrl = 'https://maquina-de-lucro-theta.vercel.app/play';
+const playSeoEn = playCatalog.seo.en;
+const playSeoTitle = playSeoEn.title;
+const playDescription = playSeoEn.description;
+
+const playSeoTags = [
+  '<title>' + playSeoTitle + '</title>',
+  '<meta name="description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
+  '<link rel="canonical" href="' + playCanonicalUrl + '">',
+  '<meta property="og:type" content="website">',
+  '<meta property="og:title" content="' + playSeoTitle.replace(/"/g, '&quot;') + '">',
+  '<meta property="og:description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
+  '<meta property="og:url" content="' + playCanonicalUrl + '">',
+  '<meta property="og:image" content="https://maquina-de-lucro-theta.vercel.app/og/novaryn-play.jpg">',
+  '<meta property="og:image:width" content="1200">',
+  '<meta property="og:image:height" content="630">',
+  '<meta property="og:image:type" content="image/jpeg">',
+  '<meta name="twitter:card" content="summary_large_image">',
+  '<meta name="twitter:title" content="' + playSeoTitle.replace(/"/g, '&quot;') + '">',
+  '<meta name="twitter:description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
+  '<meta name="twitter:image" content="https://maquina-de-lucro-theta.vercel.app/og/novaryn-play.jpg">'
+].join('\n    ');
+
+let playHtml = template;
+playHtml = playHtml.replace(/<title>.*?<\/title>/is, '');
+playHtml = playHtml.replace(/[ \t]*<meta name="description"[^>]*\/>\n?/gi, '');
+playHtml = playHtml.replace(/[ \t]*<link rel="canonical"[^>]*\/>\n?/gi, '');
+playHtml = playHtml.replace(/[ \t]*<meta property="og:[^"]*"[^>]*\/>\n?/gi, '');
+playHtml = playHtml.replace(/[ \t]*<meta name="twitter:[^"]*"[^>]*\/>\n?/gi, '');
+
+playHtml = playHtml.replace('</head>', '    ' + playSeoTags + '\n  </head>');
+
+const playCrawlableContent = '<div id="root"><div style="min-height: 100vh; display: flex; flex-direction: column; background: #090D16; color: #f8fafc; font-family: sans-serif;"><header style="padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(9, 13, 22, 0.92);"><div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;"><a href="/" style="color: #ffffff; text-decoration: none; font-weight: 800; font-size: 1.2rem;">A MÁQUINA DE LUCRO DA SUA LOJA</a><nav style="display: flex; gap: 20px;"><a href="/play" style="color: #10b981; text-decoration: none; font-weight: 600;">Novaryn Play</a><a href="/#artigos" style="color: #cbd5e1; text-decoration: none;">Artigos & Estratégias</a></nav></div></header><main style="flex: 1; padding: 60px 20px;"><section style="max-width: 1000px; margin: 0 auto;"><h1 style="color: #ffffff; font-size: 3rem; font-weight: 900; margin-bottom: 24px;">Novaryn Play</h1><p style="color: #cbd5e1; font-size: 1.2rem; line-height: 1.6; margin-bottom: 36px; max-width: 600px;">Unofficial strategy guides and player resources for complex games. Master game mechanics with expert tactics.</p><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;"><div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px;"><h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 12px;">HYPERSHOT</h3><p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px;">A comprehensive strategy guide for mastering the game.</p><a href="https://www.amazon.com/dp/B0HHGCFNF9" style="background: linear-gradient(135deg, #FF9900 0%, #FF8C00 100%); color: #000000; font-weight: 700; padding: 12px 14px; border-radius: 8px; text-decoration: none; display: inline-block;">View on Amazon</a></div></div></section></main></div></div>';
+
+playHtml = playHtml.replace('<div id="root"></div>', playCrawlableContent);
+
+const playOutFile = path.join(playDir, 'index.html');
+fs.writeFileSync(playOutFile, playHtml, 'utf8');
+console.log('Generated ' + playOutFile);
+
+console.log("All static article pages and /play successfully generated!");

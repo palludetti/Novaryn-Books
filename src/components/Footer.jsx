@@ -47,6 +47,7 @@ export default function Footer({ onNavigate }) {
               <a href="/#livro" onClick={(e) => handleLinkClick(e, '#livro')} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }}>Os 4 Pilares do Livro</a>
               <a href="/#comprar" onClick={(e) => handleLinkClick(e, '#comprar')} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }}>Onde Comprar (Amazon/Kindle)</a>
               <a href="/#artigos" onClick={(e) => handleLinkClick(e, '#artigos')} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }}>Artigos & Estratégias</a>
+              <a href="/play" onClick={(e) => { e.preventDefault(); onNavigate('/play'); }} style={{ color: '#10b981', textDecoration: 'none', transition: 'color 0.2s', fontWeight: 600 }}>Novaryn Play</a>
             </div>
           </div>
 

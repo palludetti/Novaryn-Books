@@ -1,0 +1,13 @@
+<svg width="300" height="450" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="300" height="450" fill="url(#grad5)"/>
+  <text x="150" y="100" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="sans-serif">COMING SOON</text>
+  <text x="150" y="180" font-size="40" font-weight="bold" text-anchor="middle" fill="white" font-family="sans-serif">ANIMAL</text>
+  <text x="150" y="240" font-size="40" font-weight="bold" text-anchor="middle" fill="white" font-family="sans-serif">HOSPITAL</text>
+  <text x="150" y="420" font-size="14" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="sans-serif">In production</text>
+</svg>

@@ -1,0 +1,13 @@
+<svg width="300" height="450" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="300" height="450" fill="url(#grad4)"/>
+  <text x="150" y="100" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="sans-serif">COMING SOON</text>
+  <text x="150" y="200" font-size="48" font-weight="bold" text-anchor="middle" fill="white" font-family="sans-serif">STEAL</text>
+  <text x="150" y="250" font-size="48" font-weight="bold" text-anchor="middle" fill="white" font-family="sans-serif">AN EGG</text>
+  <text x="150" y="420" font-size="14" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="sans-serif">In production</text>
+</svg>

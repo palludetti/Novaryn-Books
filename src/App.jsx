@@ -9,6 +9,7 @@ import BlogSection from './components/BlogSection';
 import Footer from './components/Footer';
 import ArticlePage from './components/ArticlePage';
 import ArticleNotFound from './components/ArticleNotFound';
+import PlayPage from './components/play/PlayPage';
 import LeadMagnetModal from './components/LeadMagnetModal';
 import AdminLeadsModal from './components/AdminLeadsModal';
 import { getArticleBySlug } from './data/articles';
@@ -75,6 +76,16 @@ export default function App() {
   };
 
   // Route Dispatching
+  if (currentPath === '/play') {
+    return (
+      <PlayPage 
+        onNavigate={handleNavigate}
+        onOpenLeadModal={() => { setLeadModalData(null); setIsLeadModalOpen(true); }}
+        onOpenAdminModal={() => setIsAdminModalOpen(true)}
+      />
+    );
+  }
+
   if (currentPath.startsWith('/artigos/')) {
     const slug = currentPath.replace('/artigos/', '').split('?')[0].split('#')[0].replace(/\/$/, '');
     const article = getArticleBySlug(slug);
