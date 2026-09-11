@@ -15,7 +15,8 @@ export const playCatalog = {
         en: {
           asin: 'B0HHGCFNF9',
           amazonUS: 'https://www.amazon.com/dp/B0HHGCFNF9',
-          amazonBR: 'https://www.amazon.com.br/dp/B0HHGCFNF9',
+          amazonBR: null,
+          amazonBRLabel: 'Amazon Brasil — Em breve',
           priceBR: 'R$ 24,90',
           hasKU: true
         },
@@ -49,6 +50,7 @@ export const playCatalog = {
           paperbackUS: 'https://www.amazon.com/dp/B0HJ4P3TD3',
           amazonUS: 'https://www.amazon.com/dp/B0HJ3T79QC',
           amazonBR: 'https://www.amazon.com.br/dp/B0HJ3T79QC',
+          amazonBRDisplay: 'Amazon Brasil — English Edition',
           priceBR: null,
           hasKU: false
         },

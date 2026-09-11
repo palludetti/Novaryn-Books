@@ -287,7 +287,7 @@ export default function PlayBookCard({ book, language = 'en' }) {
                     e.currentTarget.style.transform = 'scale(1)';
                   }}
                 >
-                  Amazon Brasil
+                  {edition.amazonBRDisplay || 'Amazon Brasil'}
                   <ExternalLink size={14} />
                 </a>
               )}
