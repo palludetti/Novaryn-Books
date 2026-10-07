@@ -183,7 +183,13 @@ const T = {
 };
 
 export default function PlayPage({ onNavigate }) {
-  const [lang, setLang] = useState('en');
+  const [lang, setLang] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const param = new URLSearchParams(window.location.search).get('lang');
+      if (param === 'pt' || param === 'pt-BR') return 'pt';
+    }
+    return 'en';
+  });
   const copy = playCopy[lang];
 
   // Sincroniza idioma do documento, título e meta tags na troca de idioma
