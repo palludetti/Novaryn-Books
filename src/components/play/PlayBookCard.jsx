@@ -24,8 +24,6 @@ const T = {
   coverImg: {
     width: '100%',
     height: 'auto',
-    aspectRatio: '2 / 3',
-    objectFit: 'cover',
     display: 'block',
   },
   title: {

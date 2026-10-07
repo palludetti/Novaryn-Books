@@ -79,3 +79,36 @@ export function getTrackedClicks() {
   }
   return [];
 }
+
+/**
+ * Retorna um sumário consolidado dos cliques registrados localmente
+ * agrupados por livro, idioma, formato e loja.
+ * @returns {Object}
+ */
+export function getClickSummary() {
+  const clicks = getTrackedClicks();
+  const summary = {
+    total: clicks.length,
+    byBook: {},
+    byLang: {},
+    byFormat: {},
+    byStore: {}
+  };
+
+  for (const c of clicks) {
+    summary.byBook[c.bookId] = (summary.byBook[c.bookId] || 0) + 1;
+    summary.byLang[c.lang] = (summary.byLang[c.lang] || 0) + 1;
+    summary.byFormat[c.format] = (summary.byFormat[c.format] || 0) + 1;
+    summary.byStore[c.store] = (summary.byStore[c.store] || 0) + 1;
+  }
+
+  return summary;
+}
+
+// Expõe helpers no objeto window para consulta direta no console do navegador
+if (typeof window !== 'undefined') {
+  window.novarynPlay = {
+    getClicks: getTrackedClicks,
+    getSummary: getClickSummary
+  };
+}

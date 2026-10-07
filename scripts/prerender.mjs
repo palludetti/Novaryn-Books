@@ -137,7 +137,7 @@ const playBooksHtml = playBooks
 
     return (
       '<article style="background:#1a202c;border:1px solid #2a3341;border-radius:14px;padding:20px;margin-bottom:24px;display:flex;gap:18px;align-items:flex-start;">' +
-      '<img src="' + edition.cover + '" alt="' + esc(book.title) + ' Cover" width="124" height="186" style="border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,0.45);flex:none;">' +
+      '<img src="' + edition.cover + '" alt="' + esc(book.title) + ' Cover" width="124" style="border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,0.45);flex:none;height:auto;display:block;">' +
       '<div style="min-width:0;flex:1;">' +
       '<h3 style="color:#e8ecf3;margin:0 0 4px;font-size:1.1rem;font-weight:700;">' + escapeHtml(book.title) + '</h3>' +
       '<p style="color:#98a3b5;margin:0 0 8px;font-size:0.85rem;">' + escapeHtml(edition.subtitle) + ' — Adrian Vossell</p>' +
