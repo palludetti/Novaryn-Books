@@ -1,5 +1,18 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "maquina-de-lucro-theta.vercel.app"
+        }
+      ],
+      "destination": "https://metodomaquinadelucro.com.br/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/artigos/(.*)",
