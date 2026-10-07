@@ -76,7 +76,7 @@ export default function App() {
   };
 
   // Route Dispatching
-  if (currentPath === '/play') {
+  if (currentPath === '/play' || currentPath === '/play/') {
     return (
       <PlayPage 
         onNavigate={handleNavigate}
