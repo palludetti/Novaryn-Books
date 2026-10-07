@@ -36,14 +36,14 @@ export default function PlayPage({ onNavigate }) {
       canonical.rel = 'canonical';
       document.head.appendChild(canonical);
     }
-    canonical.href = 'https://maquina-de-lucro-theta.vercel.app/play';
+    canonical.href = 'https://metodomaquinadelucro.com.br/play';
 
     const ogUpdates = {
       'og:title': seoData.title,
       'og:description': seoData.description,
-      'og:url': 'https://maquina-de-lucro-theta.vercel.app/play',
+      'og:url': 'https://metodomaquinadelucro.com.br/play',
       'og:type': 'website',
-      'og:image': 'https://maquina-de-lucro-theta.vercel.app/og/novaryn-play.jpg',
+      'og:image': 'https://metodomaquinadelucro.com.br/og/novaryn-play.jpg',
       'og:image:width': '1200',
       'og:image:height': '630',
       'og:image:type': 'image/jpeg'
@@ -64,7 +64,7 @@ export default function PlayPage({ onNavigate }) {
       'twitter:card': 'summary_large_image',
       'twitter:title': seoData.title,
       'twitter:description': seoData.description,
-      'twitter:image': 'https://maquina-de-lucro-theta.vercel.app/og/novaryn-play.jpg'
+      'twitter:image': 'https://metodomaquinadelucro.com.br/og/novaryn-play.jpg'
     };
 
     Object.entries(twitterUpdates).forEach(([name, content]) => {

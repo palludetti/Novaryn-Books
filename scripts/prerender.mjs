@@ -22,7 +22,7 @@ for (const article of articles) {
   const articleDir = path.join(distDir, 'artigos', article.slug);
   fs.mkdirSync(articleDir, { recursive: true });
 
-  const canonicalUrl = 'https://maquina-de-lucro-theta.vercel.app/artigos/' + article.slug;
+  const canonicalUrl = 'https://metodomaquinadelucro.com.br/artigos/' + article.slug;
   const fullTitle = article.seoTitle + ' | A Máquina de Lucro da Sua Loja';
 
   // Custom SEO Tags
@@ -35,14 +35,14 @@ for (const article of articles) {
     '<meta property="og:description" content="' + article.metaDescription.replace(/"/g, '&quot;') + '">',
     '<meta property="og:url" content="' + canonicalUrl + '">',
     '<meta property="og:site_name" content="A Máquina de Lucro da Sua Loja">',
-    '<meta property="og:image" content="https://maquina-de-lucro-theta.vercel.app/og/og-home.png">',
+    '<meta property="og:image" content="https://metodomaquinadelucro.com.br/og/og-home.png">',
     '<meta property="og:image:width" content="1200">',
     '<meta property="og:image:height" content="630">',
     '<meta property="og:image:type" content="image/png">',
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:title" content="' + fullTitle.replace(/"/g, '&quot;') + '">',
     '<meta name="twitter:description" content="' + article.metaDescription.replace(/"/g, '&quot;') + '">',
-    '<meta name="twitter:image" content="https://maquina-de-lucro-theta.vercel.app/og/og-home.png">'
+    '<meta name="twitter:image" content="https://metodomaquinadelucro.com.br/og/og-home.png">'
   ].join('\n    ');
 
   // Strip from the home template all tags that will be replaced by article-specific ones
@@ -90,7 +90,7 @@ function escapeHtml(text) {
 const playDir = path.join(distDir, 'play');
 fs.mkdirSync(playDir, { recursive: true });
 
-const playCanonicalUrl = 'https://maquina-de-lucro-theta.vercel.app/play';
+const playCanonicalUrl = 'https://metodomaquinadelucro.com.br/play';
 const playSeoEn = playCatalog.seo.en;
 const playSeoTitle = playSeoEn.title;
 const playDescription = playSeoEn.description;
@@ -103,14 +103,14 @@ const playSeoTags = [
   '<meta property="og:title" content="' + playSeoTitle.replace(/"/g, '&quot;') + '">',
   '<meta property="og:description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
   '<meta property="og:url" content="' + playCanonicalUrl + '">',
-  '<meta property="og:image" content="https://maquina-de-lucro-theta.vercel.app/og/novaryn-play.jpg">',
+  '<meta property="og:image" content="https://metodomaquinadelucro.com.br/og/novaryn-play.jpg">',
   '<meta property="og:image:width" content="1200">',
   '<meta property="og:image:height" content="630">',
   '<meta property="og:image:type" content="image/jpeg">',
   '<meta name="twitter:card" content="summary_large_image">',
   '<meta name="twitter:title" content="' + playSeoTitle.replace(/"/g, '&quot;') + '">',
   '<meta name="twitter:description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
-  '<meta name="twitter:image" content="https://maquina-de-lucro-theta.vercel.app/og/novaryn-play.jpg">'
+  '<meta name="twitter:image" content="https://metodomaquinadelucro.com.br/og/novaryn-play.jpg">'
 ].join('\n    ');
 
 let playHtml = template;
