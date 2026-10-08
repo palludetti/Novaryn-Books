@@ -38,7 +38,7 @@ export const books = [
     slug: 'do-real-ao-dolar',
     title: 'Do Real ao Dólar',
     subtitle: 'Como validar um negócio pra vender em dólar sem sair do Brasil — antes de investir um centavo',
-    cover: 'https://m.media-amazon.com/images/I/51-xPOJ32nL._SY522_.jpg',
+    cover: '/do-real-ao-dolar-cover.jpg',
     pagePath: '/livros/do-real-ao-dolar',
     url: 'https://metodomaquinadelucro.com.br/livros/do-real-ao-dolar',
     tagline: 'Você não precisa de sorte pra vender em dólar do Brasil. Precisa de disciplina pra testar antes de apostar.',
