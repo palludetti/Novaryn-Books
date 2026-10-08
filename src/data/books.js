@@ -62,6 +62,7 @@ export const books = [
       'Não é um livro de enriquecimento rápido nem um passo a passo de plataforma. É um método de decisão.',
     formats: [
       { label: 'Kindle (Amazon Brasil)', note: 'Incluído no Kindle Unlimited', href: 'https://www.amazon.com.br/dp/B0H1TKP45Y', primary: true },
+      { label: 'Impresso (UICLAP)', href: 'https://loja.uiclap.com/titulo/ua200103' },
       { label: 'Paperback (Amazon EUA)', href: 'https://www.amazon.com/dp/B0HHWG86NB' }
     ],
     pages: 39,
