@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { articles } from '../src/data/articles.js';
 import { playCatalog } from '../src/data/playCatalog.js';
+import { books, author } from '../src/data/books.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -197,4 +198,153 @@ const playOutFile = path.join(playDir, 'index.html');
 fs.writeFileSync(playOutFile, playHtml, 'utf8');
 console.log('Generated ' + playOutFile);
 
-console.log("All static article pages and /play successfully generated!");
+
+// ---------- Livros e página do autor ----------
+const SITE = 'https://metodomaquinadelucro.com.br';
+const attr = (t) => escapeHtml(t);
+
+function stripHomeSeo(html) {
+  return html
+    .replace(/<title>.*?<\/title>/is, '')
+    .replace(/[ \t]*<meta name="description"[^>]*\/>\n?/gi, '')
+    .replace(/[ \t]*<link rel="canonical"[^>]*\/>\n?/gi, '')
+    .replace(/[ \t]*<meta property="og:[^"]*"[^>]*\/>\n?/gi, '')
+    .replace(/[ \t]*<meta name="twitter:[^"]*"[^>]*\/>\n?/gi, '');
+}
+
+function seoHead({ title, description, url, image, type, jsonLd }) {
+  const img = image || SITE + '/og/og-home.png';
+  return [
+    '<title>' + escapeHtml(title) + '</title>',
+    '<meta name="description" content="' + attr(description) + '">',
+    '<link rel="canonical" href="' + url + '">',
+    '<meta property="og:type" content="' + type + '">',
+    '<meta property="og:title" content="' + attr(title) + '">',
+    '<meta property="og:description" content="' + attr(description) + '">',
+    '<meta property="og:url" content="' + url + '">',
+    '<meta property="og:site_name" content="A Máquina de Lucro da Sua Loja">',
+    '<meta property="og:image" content="' + img + '">',
+    '<meta name="twitter:card" content="summary_large_image">',
+    '<meta name="twitter:title" content="' + attr(title) + '">',
+    '<meta name="twitter:description" content="' + attr(description) + '">',
+    '<meta name="twitter:image" content="' + img + '">',
+    '<script type="application/ld+json">' + JSON.stringify(jsonLd).replace(/</g, '\\u003c') + '</script>'
+  ].join('\n    ');
+}
+
+const shellOpen = '<div id="root"><div style="min-height: 100vh; display: flex; flex-direction: column; background: #090D16; color: #f8fafc; font-family: sans-serif;"><header style="padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);"><div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;"><a href="/" style="color: #ffffff; text-decoration: none; font-weight: 800; font-size: 1.2rem;">A MÁQUINA DE LUCRO DA SUA LOJA</a><nav style="display: flex; gap: 20px;"><a href="/' + author.slug + '" style="color: #cbd5e1; text-decoration: none;">Henrique Voss</a><a href="/#artigos" style="color: #cbd5e1; text-decoration: none;">Artigos</a></nav></div></header><main style="flex: 1; padding: 48px 20px;"><div style="max-width: 900px; margin: 0 auto;">';
+const shellClose = '</div></main></div></div>';
+
+const authorLd = {
+  '@type': 'Person',
+  name: author.name,
+  url: SITE + '/' + author.slug,
+  description: author.shortBio
+};
+
+function absCover(book) {
+  return book.cover.startsWith('http') ? book.cover : SITE + book.cover;
+}
+
+function bookLd(book) {
+  const ld = {
+    '@type': 'Book',
+    name: book.title,
+    alternativeHeadline: book.subtitle,
+    author: authorLd,
+    publisher: { '@type': 'Organization', name: 'Novaryn Books' },
+    inLanguage: 'pt-BR',
+    url: book.url,
+    image: absCover(book),
+    description: book.description,
+    datePublished: book.datePublished
+  };
+  if (book.pages) ld.numberOfPages = book.pages;
+  ld.workExample = book.formats.map((f) => ({
+    '@type': 'Book',
+    bookFormat: /kindle/i.test(f.label) ? 'https://schema.org/EBook' : 'https://schema.org/Paperback',
+    name: book.title + ' — ' + f.label,
+    url: f.href
+  }));
+  return ld;
+}
+
+function bookCardHtml(book) {
+  return '<div style="display: flex; gap: 18px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; margin-bottom: 16px;"><img src="' + attr(book.cover) + '" alt="Capa do livro ' + attr(book.title) + '" width="110" style="border-radius: 8px; aspect-ratio: 2/3; object-fit: cover;"><div><h3 style="color: #fff; margin: 0 0 6px;">' + escapeHtml(book.title) + '</h3><p style="color: #34d399; margin: 0 0 8px;">' + escapeHtml(book.subtitle) + '</p><p style="color: #cbd5e1; margin: 0 0 10px;">' + escapeHtml(book.tagline) + '</p><a href="' + book.pagePath + '" style="color: #38bdf8;">Conhecer o livro</a></div></div>';
+}
+
+function writePage(relDir, head, body) {
+  const dir = path.join(distDir, relDir);
+  fs.mkdirSync(dir, { recursive: true });
+  let html = stripHomeSeo(template);
+  html = html.replace('</head>', '    ' + head + '\n  </head>');
+  html = html.replace('<div id="root"></div>', shellOpen + body + shellClose);
+  const out = path.join(dir, 'index.html');
+  fs.writeFileSync(out, html, 'utf8');
+  console.log('Generated ' + out);
+}
+
+// Páginas individuais de livro (o livro principal já é a home)
+for (const book of books.filter((b) => b.pagePath.startsWith('/livros/'))) {
+  const list = (items) => '<ul>' + items.map((i) => '<li>' + escapeHtml(i) + '</li>').join('') + '</ul>';
+  const buy = book.formats.map((f) => '<a href="' + f.href + '" rel="noopener" style="display: inline-block; margin: 0 12px 12px 0; padding: 12px 20px; border-radius: 9999px; background: #f59e0b; color: #000; font-weight: 700; text-decoration: none;">' + escapeHtml(f.label) + '</a>').join('');
+  const others = books.filter((b) => b.slug !== book.slug).map(bookCardHtml).join('');
+  const body =
+    '<article>' +
+    '<img src="' + attr(book.cover) + '" alt="Capa do livro ' + attr(book.title) + '" width="200" style="border-radius: 10px;">' +
+    '<h1 style="color: #fff;">' + escapeHtml(book.title) + '</h1>' +
+    '<p style="color: #34d399; font-size: 1.1rem;">' + escapeHtml(book.subtitle) + '</p>' +
+    '<p style="color: #cbd5e1;">por <a href="/' + author.slug + '" style="color: #38bdf8;">' + escapeHtml(author.name) + '</a></p>' +
+    '<p style="color: #fbbf24; font-style: italic;">' + escapeHtml(book.tagline) + '</p>' +
+    '<div>' + buy + '</div>' +
+    '<h2 style="color: #fff;">Sobre o livro</h2><p style="color: #cbd5e1;">' + escapeHtml(book.description) + '</p>' +
+    (book.intro || []).map((p) => '<p style="color: #cbd5e1;">' + escapeHtml(p) + '</p>').join('') +
+    (book.learn ? '<h2 style="color: #fff;">O que você vai aprender</h2>' + list(book.learn) : '') +
+    (book.forWho ? '<h2 style="color: #fff;">Para quem é</h2>' + list(book.forWho) : '') +
+    (book.notFor ? '<p style="color: #94a3b8; font-style: italic;">' + escapeHtml(book.notFor) + '</p>' : '') +
+    '<h2 style="color: #fff;">Sobre o autor</h2><p style="color: #cbd5e1;">' + escapeHtml(author.shortBio) + '</p>' +
+    '</article>' +
+    (others ? '<h2 style="color: #fff;">Do mesmo autor</h2>' + others : '');
+  const ld = { '@context': 'https://schema.org', ...bookLd(book) };
+  writePage(
+    book.pagePath.slice(1),
+    seoHead({
+      title: (book.seoTitle || book.title) + ' | ' + author.name,
+      description: book.metaDescription || book.description,
+      url: book.url,
+      image: absCover(book),
+      type: 'book',
+      jsonLd: ld
+    }),
+    body
+  );
+}
+
+// Página do autor
+{
+  const url = SITE + '/' + author.slug;
+  const body =
+    '<h1 style="color: #fff;">' + escapeHtml(author.name) + '</h1>' +
+    '<p style="color: #34d399;">' + escapeHtml(author.role) + '</p>' +
+    author.bio.map((p) => '<p style="color: #cbd5e1;">' + escapeHtml(p) + '</p>').join('') +
+    '<h2 style="color: #fff;">Livros</h2>' + books.map(bookCardHtml).join('');
+  const ld = {
+    '@context': 'https://schema.org',
+    ...authorLd,
+    mainEntityOfPage: url,
+    workExample: books.map((b) => ({ '@type': 'Book', name: b.title, url: b.url }))
+  };
+  writePage(
+    author.slug,
+    seoHead({
+      title: author.name + ' — livros sobre lucro, varejo e negócios',
+      description: author.shortBio,
+      url,
+      type: 'profile',
+      jsonLd: ld
+    }),
+    body
+  );
+}
+
+console.log("All static pages (articles, /play, books, author) successfully generated!");

@@ -30,6 +30,14 @@
       "destination": "/artigos/$1/index.html"
     },
     {
+      "source": "/livros/(.*)",
+      "destination": "/livros/$1/index.html"
+    },
+    {
+      "source": "/henrique-voss",
+      "destination": "/henrique-voss/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
