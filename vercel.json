@@ -38,6 +38,14 @@
       "destination": "/henrique-voss/index.html"
     },
     {
+      "source": "/play",
+      "destination": "/play/index.html"
+    },
+    {
+      "source": "/play/",
+      "destination": "/play/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

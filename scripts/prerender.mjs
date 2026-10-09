@@ -2,13 +2,15 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { articles } from '../src/data/articles.js';
-import { playCatalog } from '../src/data/playCatalog.js';
+import { playBooks, playComingNext, playCopy, resolveEdition } from '../src/data/playCatalog.js';
 import { books, author } from '../src/data/books.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distDir = path.resolve(__dirname, '../dist');
 const templatePath = path.join(distDir, 'index.html');
+
+const SITE = 'https://metodomaquinadelucro.com.br';
 
 if (!fs.existsSync(templatePath)) {
   console.error("dist/index.html not found! Run 'vite build' first.");
@@ -17,16 +19,40 @@ if (!fs.existsSync(templatePath)) {
 
 const template = fs.readFileSync(templatePath, 'utf8');
 
-console.log("Generating static pre-rendered HTML for " + articles.length + " articles and /play...");
+console.log("Generating static pre-rendered HTML for articles, /play, books, and author...");
 
+// Helper: Escape HTML content
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+const esc = (s) => String(s).replace(/"/g, '&quot;');
+const attr = (t) => escapeHtml(t);
+
+// Helper: Strip Home SEO tags from template
+function stripHomeSeo(html) {
+  return html
+    .replace(/<title>.*?<\/title>/is, '')
+    .replace(/[ \t]*<meta name="description"[^>]*\/>\n?/gi, '')
+    .replace(/[ \t]*<link rel="canonical"[^>]*\/>\n?/gi, '')
+    .replace(/[ \t]*<meta property="og:[^"]*"[^>]*\/>\n?/gi, '')
+    .replace(/[ \t]*<meta name="twitter:[^"]*"[^>]*\/>\n?/gi, '');
+}
+
+// 1. Gera páginas estáticas dos artigos
 for (const article of articles) {
   const articleDir = path.join(distDir, 'artigos', article.slug);
   fs.mkdirSync(articleDir, { recursive: true });
 
-  const canonicalUrl = 'https://metodomaquinadelucro.com.br/artigos/' + article.slug;
+  const canonicalUrl = SITE + '/artigos/' + article.slug;
   const fullTitle = article.seoTitle + ' | A Máquina de Lucro da Sua Loja';
 
-  // Custom SEO Tags
   const seoTags = [
     '<title>' + fullTitle + '</title>',
     '<meta name="description" content="' + article.metaDescription.replace(/"/g, '&quot;') + '">',
@@ -36,33 +62,19 @@ for (const article of articles) {
     '<meta property="og:description" content="' + article.metaDescription.replace(/"/g, '&quot;') + '">',
     '<meta property="og:url" content="' + canonicalUrl + '">',
     '<meta property="og:site_name" content="A Máquina de Lucro da Sua Loja">',
-    '<meta property="og:image" content="https://metodomaquinadelucro.com.br/og/og-home.png">',
+    '<meta property="og:image" content="' + SITE + '/og/og-home.png">',
     '<meta property="og:image:width" content="1200">',
     '<meta property="og:image:height" content="630">',
     '<meta property="og:image:type" content="image/png">',
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:title" content="' + fullTitle.replace(/"/g, '&quot;') + '">',
     '<meta name="twitter:description" content="' + article.metaDescription.replace(/"/g, '&quot;') + '">',
-    '<meta name="twitter:image" content="https://metodomaquinadelucro.com.br/og/og-home.png">'
+    '<meta name="twitter:image" content="' + SITE + '/og/og-home.png">'
   ].join('\n    ');
 
-  // Strip from the home template all tags that will be replaced by article-specific ones
-  let html = template;
-  // Remove <title>
-  html = html.replace(/<title>.*?<\/title>/is, '');
-  // Remove meta description (home version)
-  html = html.replace(/[ \t]*<meta name="description"[^>]*\/>\n?/gi, '');
-  // Remove canonical (home version)
-  html = html.replace(/[ \t]*<link rel="canonical"[^>]*\/>\n?/gi, '');
-  // Remove all og: meta tags (type, title, description, url, site_name, image, image:width, image:height, image:type)
-  html = html.replace(/[ \t]*<meta property="og:[^"]*"[^>]*\/>\n?/gi, '');
-  // Remove all twitter: meta tags (card, title, description, image)
-  html = html.replace(/[ \t]*<meta name="twitter:[^"]*"[^>]*\/>\n?/gi, '');
-
-  // Inject article-specific SEO tags before </head>
+  let html = stripHomeSeo(template);
   html = html.replace('</head>', '    ' + seoTags + '\n  </head>');
 
-  // Pre-rendered Crawlable Content inside Root for 100% Raw HTML Indexability
   const ctaHtml = article.cta 
     ? '<p style="color: #ffffff; font-size: 1.1rem; font-weight: 600; margin-bottom: 18px;">' + article.cta.supportText + '</p><a href="' + article.cta.buttonHref + '" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000000; font-weight: 800; padding: 14px 28px; border-radius: 9999px; text-decoration: none; display: inline-block;">' + article.cta.buttonText + '</a>'
     : '<p style="color: #ffffff; font-size: 1.1rem; font-weight: 600; margin-bottom: 18px;">Quer dominar todas as estratégias completas de lucratividade?</p><a href="https://loja.uiclap.com/titulo/ua189875" target="_blank" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000000; font-weight: 800; padding: 14px 28px; border-radius: 9999px; text-decoration: none; display: inline-block;">Garantir Meu Exemplar Impresso na UICLAP</a>';
@@ -76,142 +88,115 @@ for (const article of articles) {
   console.log('Generated ' + outFile);
 }
 
-// Helper: Escape HTML content
-function escapeHtml(text) {
-  if (!text) return '';
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+// 2. Gera página estática de Novaryn Play (/play)
+console.log("Generating static pre-rendered HTML for /play...");
+const playLang = 'en';
+const playT = playCopy[playLang];
+const playCanonical = SITE + '/play';
+const playOgImg = SITE + '/og/og-play.png';
 
-// Generate /play pre-rendered page
-const playDir = path.join(distDir, 'play');
-fs.mkdirSync(playDir, { recursive: true });
-
-const playCanonicalUrl = 'https://metodomaquinadelucro.com.br/play';
-const playSeoEn = playCatalog.seo.en;
-const playSeoTitle = playSeoEn.title;
-const playDescription = playSeoEn.description;
-
-const playSeoTags = [
-  '<title>' + playSeoTitle + '</title>',
-  '<meta name="description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
-  '<link rel="canonical" href="' + playCanonicalUrl + '">',
+const playSeo = [
+  '<title>' + escapeHtml(playT.seoTitle) + '</title>',
+  '<meta name="description" content="' + esc(playT.seoDescription) + '">',
+  '<link rel="canonical" href="' + playCanonical + '">',
   '<meta property="og:type" content="website">',
-  '<meta property="og:title" content="' + playSeoTitle.replace(/"/g, '&quot;') + '">',
-  '<meta property="og:description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
-  '<meta property="og:url" content="' + playCanonicalUrl + '">',
-  '<meta property="og:image" content="https://metodomaquinadelucro.com.br/og/novaryn-play.jpg">',
+  '<meta property="og:title" content="' + esc(playT.seoTitle) + '">',
+  '<meta property="og:description" content="' + esc(playT.seoDescription) + '">',
+  '<meta property="og:url" content="' + playCanonical + '">',
+  '<meta property="og:site_name" content="Novaryn Books">',
+  '<meta property="og:image" content="' + playOgImg + '">',
   '<meta property="og:image:width" content="1200">',
   '<meta property="og:image:height" content="630">',
-  '<meta property="og:image:type" content="image/jpeg">',
+  '<meta property="og:image:type" content="image/png">',
   '<meta name="twitter:card" content="summary_large_image">',
-  '<meta name="twitter:title" content="' + playSeoTitle.replace(/"/g, '&quot;') + '">',
-  '<meta name="twitter:description" content="' + playDescription.replace(/"/g, '&quot;') + '">',
-  '<meta name="twitter:image" content="https://metodomaquinadelucro.com.br/og/novaryn-play.jpg">'
+  '<meta name="twitter:title" content="' + esc(playT.seoTitle) + '">',
+  '<meta name="twitter:description" content="' + esc(playT.seoDescription) + '">',
+  '<meta name="twitter:image" content="' + playOgImg + '">'
 ].join('\n    ');
 
-let playHtml = template;
-playHtml = playHtml.replace(/<title>.*?<\/title>/is, '');
-playHtml = playHtml.replace(/[ \t]*<meta name="description"[^>]*\/>\n?/gi, '');
-playHtml = playHtml.replace(/[ \t]*<link rel="canonical"[^>]*\/>\n?/gi, '');
-playHtml = playHtml.replace(/[ \t]*<meta property="og:[^"]*"[^>]*\/>\n?/gi, '');
-playHtml = playHtml.replace(/[ \t]*<meta name="twitter:[^"]*"[^>]*\/>\n?/gi, '');
+const playBooksHtml = playBooks
+  .map((book) => {
+    const { edition, fallback } = resolveEdition(book, playLang);
+    const links = [];
+    if (edition.links.br) links.push({ label: 'Amazon BR', href: edition.links.br });
+    if (edition.links.us) links.push({ label: 'Amazon US', href: edition.links.us });
+    if (edition.links.print) links.push({ label: playT.buyPaperback, href: edition.links.print });
 
-playHtml = playHtml.replace('</head>', '    ' + playSeoTags + '\n  </head>');
+    const linksHtml = links.length
+      ? links
+          .map(
+            (l) =>
+              '<a href="' + l.href + '" target="_blank" rel="noopener noreferrer" style="color:#ff9d2e;text-decoration:none;margin-right:16px;font-weight:700;">' +
+              l.label +
+              '</a>'
+          )
+          .join('')
+      : '';
+    const soonHtml = edition.links.br ? '' : '<span style="color:#6b7789;">' + playT.brSoon + '</span>';
+    const kuHtml = edition.kindleUnlimited ? '<span style="color:#ff9d2e;font-size:0.8rem;font-weight:700;">' + playT.ku + '</span> ' : '';
+    const langHtml = fallback ? '<span style="color:#98a3b5;font-size:0.8rem;">' + playT.englishEdition + '</span>' : '';
 
-// Dynamically generate crawlable content from playCatalog
-const availableBooks = playCatalog.books.filter(b => b.status === 'available');
-const comingSoonBooks = playCatalog.books.filter(b => b.status === 'coming-soon');
+    return (
+      '<article style="background:#1a202c;border:1px solid #2a3341;border-radius:14px;padding:20px;margin-bottom:24px;display:flex;gap:18px;align-items:flex-start;">' +
+      '<img src="' + edition.cover + '" alt="' + esc(book.title) + ' Cover" width="124" style="border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,0.45);flex:none;height:auto;display:block;">' +
+      '<div style="min-width:0;flex:1;">' +
+      '<h3 style="color:#e8ecf3;margin:0 0 4px;font-size:1.1rem;font-weight:700;">' + escapeHtml(book.title) + '</h3>' +
+      '<p style="color:#98a3b5;margin:0 0 8px;font-size:0.85rem;">' + escapeHtml(edition.subtitle) + ' — Adrian Vossell</p>' +
+      '<p style="margin:0 0 8px;">' + kuHtml + langHtml + '</p>' +
+      '<p style="color:#98a3b5;line-height:1.6;margin:0 0 12px;font-size:0.9rem;">' + escapeHtml(book.description[playLang]) + '</p>' +
+      '<p style="margin:0;">' + linksHtml + soonHtml + '</p>' +
+      '</div>' +
+      '</article>'
+    );
+  })
+  .join('');
 
-// Helper: Render book card HTML
-function renderBookCardHtml(book) {
-  const edition = book.editions.en || {};
-  const cover = book.cover;
-  const title = escapeHtml(book.title);
-  const subtitle = escapeHtml(book.subtitle);
-  const description = escapeHtml(book.description);
-  
-  let ctaHtml = '';
-  
-  // Amazon US
-  if (edition.amazonUS) {
-    ctaHtml += '<a href="' + edition.amazonUS + '" style="background: linear-gradient(135deg, #ff9900, #ff8800); color: #0f1419; font-weight: 700; padding: 10px 12px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Amazon US</a>';
-  }
-  
-  // Amazon BR (link or text)
-  if (edition.amazonBR) {
-    const brLabel = (edition.amazonBRDisplay && typeof edition.amazonBRDisplay === 'object') 
-      ? edition.amazonBRDisplay.en 
-      : edition.amazonBRDisplay || 'Amazon Brasil';
-    ctaHtml += '<a href="' + edition.amazonBR + '" style="background: linear-gradient(135deg, #ff9900, #ff8800); color: #0f1419; font-weight: 700; padding: 10px 12px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">' + escapeHtml(brLabel) + '</a>';
-  } else if (edition.amazonBRLabel) {
-    const brLabel = (edition.amazonBRLabel && typeof edition.amazonBRLabel === 'object')
-      ? edition.amazonBRLabel.en
-      : edition.amazonBRLabel;
-    ctaHtml += '<div style="padding: 10px 12px; background: rgba(255, 153, 0, 0.1); border: 1px solid rgba(255, 153, 0, 0.3); color: #ff9900; text-align: center; border-radius: 6px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">' + escapeHtml(brLabel) + '</div>';
-  }
-  
-  // Kindle Unlimited mention
-  let kuHtml = '';
-  if (edition.hasKU) {
-    kuHtml = '<p style="color: #94a3b8; font-size: 0.85rem; margin-top: 8px;">Included in Kindle Unlimited</p>';
-  }
-  
-  return '<div style="background: linear-gradient(135deg, #1a202c 0%, #0f1419 100%); border: 1px solid rgba(255, 153, 0, 0.15); border-radius: 12px; overflow: hidden; padding: 20px;">' +
-         '<img src="' + cover + '" alt="' + title + ' Cover" style="width: 100%; max-width: 200px; margin-bottom: 16px; border-radius: 8px; aspect-ratio: 2/3;">' +
-         '<h3 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">' + title + '</h3>' +
-         '<p style="color: #10b981; font-size: 0.9rem; margin-bottom: 8px; font-weight: 600;">' + subtitle + '</p>' +
-         '<p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 12px;">by Adrian Vossell</p>' +
-         '<p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px;">' + description + '</p>' +
-         '<div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">' + ctaHtml + '</div>' +
-         kuHtml +
-         '</div>';
-}
+const playSoonHtml = playComingNext
+  .map(
+    (item) =>
+      '<article style="background:#1a202c;border:1px solid #2a3341;border-radius:14px;padding:20px;margin-bottom:16px;display:flex;gap:18px;align-items:center;">' +
+      '<div style="width:124px;height:186px;border-radius:6px;border:1px dashed #2a3341;background:#12161f;display:flex;align-items:center;justify-content:center;color:#3b4657;font-size:1.8rem;font-weight:800;flex:none;">' + escapeHtml(item.mark) + '</div>' +
+      '<div>' +
+      '<h3 style="color:#e8ecf3;margin:0;font-size:1.1rem;font-weight:700;">' + escapeHtml(item.title) + '</h3>' +
+      '<p style="color:#98a3b5;margin:4px 0 0;font-size:0.8rem;">' + escapeHtml(item.subtitle || '') + '</p>' +
+      '<span style="display:inline-block;margin-top:10px;padding:3px 9px;border-radius:9999px;background:rgba(255,157,46,0.12);color:#ff9d2e;font-size:0.7rem;font-weight:700;text-transform:uppercase;">' + escapeHtml(playT.inProduction) + '</span>' +
+      '</div>' +
+      '</article>'
+  )
+  .join('');
 
-// Helper: Render coming-soon card
-function renderComingSoonCardHtml(book) {
-  const title = escapeHtml(book.title);
-  const subtitle = escapeHtml(book.subtitle);
-  
-  return '<div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(9, 13, 22, 0.6) 100%); border: 1px solid rgba(255, 153, 0, 0.1); border-radius: 12px; padding: 20px; opacity: 0.65; text-align: center;">' +
-         '<h3 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">' + title + '</h3>' +
-         '<p style="color: #10b981; font-size: 0.9rem; margin-bottom: 8px; font-weight: 600;">' + subtitle + '</p>' +
-         '<p style="color: #94a3b8; font-size: 0.9rem; margin-top: 12px;">In Production</p>' +
-         '</div>';
-}
+const playContent =
+  '<div id="root"><div style="min-height:100vh;background:#0d1117;color:#e8ecf3;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;line-height:1.55;">' +
+  '<header style="padding:16px 24px;border-bottom:1px solid #2a3341;background:#0d1117;">' +
+  '<div style="max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;">' +
+  '<a href="/" style="color:#98a3b5;text-decoration:none;font-weight:600;font-size:0.85rem;">' + playT.backToHome + '</a>' +
+  '</div>' +
+  '</header>' +
+  '<main style="max-width:1120px;margin:0 auto;padding:64px 20px;">' +
+  '<p style="color:#98a3b5;letter-spacing:0.18em;text-transform:uppercase;font-size:0.75rem;margin:0 0 10px;font-weight:600;">' + playT.kicker + '</p>' +
+  '<h1 style="color:#e8ecf3;font-size:2.8rem;margin:0;font-weight:800;line-height:1.05;">NOVARYN <span style="color:#ff9d2e;">PLAY</span></h1>' +
+  '<p style="color:#98a3b5;max-width:56ch;line-height:1.6;font-size:1rem;margin:14px 0 0;">' + playT.tagline + '</p>' +
+  '<h2 style="color:#e8ecf3;font-size:0.85rem;letter-spacing:0.16em;text-transform:uppercase;margin:48px 0 20px;font-weight:700;">' + playT.published + '</h2>' +
+  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:20px;">' + playBooksHtml + '</div>' +
+  '<h2 style="color:#e8ecf3;font-size:0.85rem;letter-spacing:0.16em;text-transform:uppercase;margin:48px 0 20px;font-weight:700;">' + playT.comingNext + '</h2>' +
+  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:20px;">' + playSoonHtml + '</div>' +
+  '<footer style="margin-top:48px;padding-top:24px;border-top:1px solid #2a3341;color:#98a3b5;font-size:0.8rem;line-height:1.6;display:flex;flex-wrap:wrap;gap:12px 28px;">' +
+  '<p style="margin:0;max-width:64ch;">' + playT.disclaimer + '</p><p style="margin:0;max-width:64ch;">' + playT.noDownloads + '</p>' +
+  '</footer>' +
+  '</main></div></div>';
 
-const availableBooksHtml = availableBooks.map(renderBookCardHtml).join('');
-const comingSoonBooksHtml = comingSoonBooks.map(renderComingSoonCardHtml).join('');
-const disclaimerText = escapeHtml(playCatalog.disclaimer.en);
+let playHtml = stripHomeSeo(template);
+playHtml = playHtml.replace('<html lang="pt-BR">', '<html lang="' + playT.htmlLang + '">');
+playHtml = playHtml.replace('</head>', '    ' + playSeo + '\n  </head>');
+playHtml = playHtml.replace('<div id="root"></div>', playContent);
 
-const playCrawlableContent = '<div id="root"><div style="min-height: 100vh; display: flex; flex-direction: column; background: #090D16; color: #f8fafc; font-family: sans-serif;"><header style="padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(9, 13, 22, 0.92);"><div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;"><div><p style="color: #94a3b8; font-size: 0.8rem; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Novaryn Books</p><a href="/" style="color: #ffffff; text-decoration: none; font-weight: 800; font-size: 1.1rem;">Novaryn Play</a></div><nav style="display: flex; gap: 20px;"><a href="/play" style="color: #10b981; text-decoration: none; font-weight: 600;">Guides</a><a href="/#artigos" style="color: #cbd5e1; text-decoration: none;">Articles</a></nav></div></header><main style="flex: 1; padding: 60px 20px;"><section style="max-width: 1200px; margin: 0 auto;"><h1 style="color: #ffffff; font-size: 2.5rem; font-weight: 900; margin-bottom: 8px;">Novaryn Play</h1><p style="color: #10b981; font-size: 1rem; font-weight: 600; margin-bottom: 24px;">Strategy Guides</p><p style="color: #cbd5e1; font-size: 1rem; line-height: 1.6; margin-bottom: 48px; max-width: 700px;">Independent, unofficial player guides for the games people actually play. Explore detailed strategy resources and tactical breakdowns.</p><h2 style="color: #ffffff; font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; margin-top: 48px;">Published</h2><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-bottom: 48px;">' + availableBooksHtml + '</div>' +
-(comingSoonBooks.length > 0 ? '<h2 style="color: #ffffff; font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; margin-top: 48px;">Coming Next</h2><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-bottom: 48px;">' + comingSoonBooksHtml + '</div>' : '') +
-'<div style="background: rgba(255, 153, 0, 0.05); border: 1px solid rgba(255, 153, 0, 0.2); border-radius: 12px; padding: 24px; margin-top: 48px;"><p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin: 0;">' + disclaimerText + '</p></div></section></main><footer style="padding: 40px 20px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(9, 13, 22, 0.6);"><div style="max-width: 1200px; margin: 0 auto; text-align: center;"><p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">&copy; 2026 Novaryn Books. All rights reserved.</p></div></footer></div></div>';
-
-playHtml = playHtml.replace('<div id="root"></div>', playCrawlableContent);
-
-const playOutFile = path.join(playDir, 'index.html');
-fs.writeFileSync(playOutFile, playHtml, 'utf8');
-console.log('Generated ' + playOutFile);
+const playDir = path.join(distDir, 'play');
+fs.mkdirSync(playDir, { recursive: true });
+fs.writeFileSync(path.join(playDir, 'index.html'), playHtml, 'utf8');
+console.log('Generated ' + path.join(playDir, 'index.html'));
 
 
-// ---------- Livros e página do autor ----------
-const SITE = 'https://metodomaquinadelucro.com.br';
-const attr = (t) => escapeHtml(t);
-
-function stripHomeSeo(html) {
-  return html
-    .replace(/<title>.*?<\/title>/is, '')
-    .replace(/[ \t]*<meta name="description"[^>]*\/>\n?/gi, '')
-    .replace(/[ \t]*<link rel="canonical"[^>]*\/>\n?/gi, '')
-    .replace(/[ \t]*<meta property="og:[^"]*"[^>]*\/>\n?/gi, '')
-    .replace(/[ \t]*<meta name="twitter:[^"]*"[^>]*\/>\n?/gi, '');
-}
-
+// 3. Páginas individuais de livros e do autor
 function seoHead({ title, description, url, image, type, jsonLd }) {
   const img = image || SITE + '/og/og-home.png';
   return [
@@ -284,7 +269,7 @@ function writePage(relDir, head, body) {
   console.log('Generated ' + out);
 }
 
-// Páginas individuais de livro (o livro principal já é a home)
+// Páginas individuais de livro
 for (const book of books.filter((b) => b.pagePath.startsWith('/livros/'))) {
   const list = (items) => '<ul>' + items.map((i) => '<li>' + escapeHtml(i) + '</li>').join('') + '</ul>';
   const buy = book.formats.map((f) => '<a href="' + f.href + '" rel="noopener" style="display: inline-block; margin: 0 12px 12px 0; padding: 12px 20px; border-radius: 9999px; background: #f59e0b; color: #000; font-weight: 700; text-decoration: none;">' + escapeHtml(f.label) + '</a>').join('');
