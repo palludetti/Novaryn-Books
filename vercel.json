@@ -1,9 +1,41 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "maquina-de-lucro-theta.vercel.app"
+        }
+      ],
+      "destination": "https://metodomaquinadelucro.com.br/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path+",
+      "has": [
+        {
+          "type": "host",
+          "value": "maquina-de-lucro-theta.vercel.app"
+        }
+      ],
+      "destination": "https://metodomaquinadelucro.com.br/:path+",
+      "statusCode": 301
+    }
+  ],
   "rewrites": [
     {
       "source": "/artigos/(.*)",
       "destination": "/artigos/$1/index.html"
+    },
+    {
+      "source": "/livros/(.*)",
+      "destination": "/livros/$1/index.html"
+    },
+    {
+      "source": "/henrique-voss",
+      "destination": "/henrique-voss/index.html"
     },
     {
       "source": "/play",

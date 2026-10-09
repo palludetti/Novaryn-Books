@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BookOpen, Clock, ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
+import AuthorBooks from './AuthorBooks';
 
 export default function ArticlePage({ article, onNavigate, onOpenLeadModal, onOpenAdminModal }) {
   useEffect(() => {
@@ -129,6 +130,16 @@ export default function ArticlePage({ article, onNavigate, onOpenLeadModal, onOp
             </div>
 
           </article>
+
+          {/* Livros do autor */}
+          <div className="glass-card" style={{ marginTop: '32px', padding: '28px' }}>
+            <AuthorBooks
+              compact
+              onNavigate={onNavigate}
+              title="Livros de Henrique Voss"
+              intro="Se este artigo foi útil, os livros aprofundam o mesmo raciocínio — com o método completo."
+            />
+          </div>
 
           {/* Bottom Back Navigation */}
           <div style={{ marginTop: '32px', textAlign: 'center' }}>

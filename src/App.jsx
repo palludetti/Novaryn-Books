@@ -10,9 +10,13 @@ import Footer from './components/Footer';
 import ArticlePage from './components/ArticlePage';
 import ArticleNotFound from './components/ArticleNotFound';
 import PlayPage from './components/play/PlayPage';
+import BookPage from './components/BookPage';
+import AuthorPage from './components/AuthorPage';
+import AuthorBooks from './components/AuthorBooks';
 import LeadMagnetModal from './components/LeadMagnetModal';
 import AdminLeadsModal from './components/AdminLeadsModal';
 import { getArticleBySlug } from './data/articles';
+import { getBookBySlug, author } from './data/books';
 import './styles/theme.css';
 
 export default function App() {
@@ -86,6 +90,23 @@ export default function App() {
     );
   }
 
+  const cleanPath = currentPath.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
+  const pageProps = {
+    onNavigate: handleNavigate,
+    onOpenLeadModal: () => { setLeadModalData(null); setIsLeadModalOpen(true); },
+    onOpenAdminModal: () => setIsAdminModalOpen(true)
+  };
+
+  if (cleanPath === '/' + author.slug) {
+    return <AuthorPage {...pageProps} />;
+  }
+
+  if (cleanPath.startsWith('/livros/')) {
+    const book = getBookBySlug(cleanPath.replace('/livros/', ''));
+    if (book) return <BookPage book={book} {...pageProps} />;
+    return <ArticleNotFound {...pageProps} />;
+  }
+
   if (currentPath.startsWith('/artigos/')) {
     const slug = currentPath.replace('/artigos/', '').split('?')[0].split('#')[0].replace(/\/$/, '');
     const article = getArticleBySlug(slug);
@@ -139,7 +160,15 @@ export default function App() {
         {/* 5. Offer: Onde Comprar (UICLAP / Kindle) */}
         <BuySection />
 
-        {/* 6. Content: Artigos SEO */}
+        {/* 6. Outros livros do autor */}
+        <AuthorBooks
+          onNavigate={handleNavigate}
+          excludeSlug="a-maquina-de-lucro-da-sua-loja"
+          title={`Também de ${author.name}`}
+          intro="Para quem quer abrir uma frente de vendas em dólar sem sair do Brasil — e sem apostar o caixa da loja numa ideia que ainda não foi testada."
+        />
+
+        {/* 7. Content: Artigos SEO */}
         <BlogSection 
           onNavigate={handleNavigate}
         />

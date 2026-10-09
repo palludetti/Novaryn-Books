@@ -46,6 +46,9 @@ export default function AuthorSection() {
             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: 1.7 }}>
               Sua obra visa retirar o empresário da armadilha da rotina operacional exaustiva e ensiná-lo a tomar decisões estratégicas baseadas em indicadores reais de margem, precificação correta e fluxo de caixa sustentável.
             </p>
+            <a href="/henrique-voss" style={{ display: 'inline-block', marginTop: '16px', color: '#38bdf8', fontWeight: 600, textDecoration: 'none' }}>
+              Conheça o autor e os outros livros →
+            </a>
           </div>
 
         </div>
