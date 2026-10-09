@@ -60,4 +60,19 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://metodomaquinadelucro.com.br/artigos/quanto-custa-de-verdade-vender-um-produto-em-dolar</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metodomaquinadelucro.com.br/artigos/cac-por-que-voce-vende-todo-dia-e-o-dinheiro-nao-sobra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metodomaquinadelucro.com.br/artigos/curtida-nao-e-validacao-teste-antes-de-comprar-o-primeiro-lote</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
